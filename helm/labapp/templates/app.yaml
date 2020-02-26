@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: labapp-app
+  name: labapp-app
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    run: labapp-app
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: labapp-app
+  name: labapp-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: labapp-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: labapp-app
+    spec:
+      containers:
+      - image: {{.Values.registry}}/{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        imagePullPolicy: Always
+        name: labapp-app
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: "0.4" 
