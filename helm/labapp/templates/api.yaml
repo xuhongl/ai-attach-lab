@@ -35,6 +35,15 @@ spec:
     spec:
       containers:
       - image: {{.Values.registry}}/{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
+{{ if .Values.api.connectionString }}
+        env:
+        - name: DB_CONNECTION_STRING
+          value: {{.Values.api.connectionString}}
+{{ else }}
+        env:
+        - name: DB_CONNECTION_STRING
+          value: "Data Source=db;Initial Catalog=master;User Id=sa;Password=P2ssw0rd"
+{{ end }}
         imagePullPolicy: Always
         name: labapp-api
         resources:

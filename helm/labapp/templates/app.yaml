@@ -34,10 +34,13 @@ spec:
         run: labapp-app
     spec:
       containers:
-      - image: {{.Values.registry}}/{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+      - image: {{ .Values.registry }}/{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
         imagePullPolicy: Always
         name: labapp-app
         resources:
           limits:
             memory: 200Mi
             cpu: "0.4" 
+        env:
+          - name: API_BASE_URL
+            value: {{ .Values.app.apiBaseUrl }}

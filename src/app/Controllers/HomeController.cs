@@ -1,17 +1,33 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using app.Models;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace app.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private IConfiguration _config;
+
+        public HomeController(IConfiguration config)
         {
+            _config = config;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var apiBaseUrl = _config.GetValue<string>("API_BASE_URL");
+            var valuesUrl = System.IO.Path.Combine(apiBaseUrl, "api/values");
+            var client = new HttpClient();
+            var result = await client.GetAsync(valuesUrl);
+            dynamic values = JsonConvert.DeserializeObject(await result.Content.ReadAsStringAsync());
+            ViewData["Message"] = $"DB Version: {values[0]}, Object Count: {values[1]}";
             return View();
         }
 

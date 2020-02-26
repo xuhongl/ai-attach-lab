@@ -1,0 +1,42 @@
+{{ if .Values.api.connectionString }}
+{{ else }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: db
+spec:
+  type: ClusterIP
+  selector:
+    app: db
+  ports:
+  - protocol: TCP
+    port: 1433
+    targetPort: 1433
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: microsoft/mssql-server-linux:2017-CU12
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: "P2ssw0rd"
+{{ end }}
