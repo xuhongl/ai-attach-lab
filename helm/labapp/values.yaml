@@ -6,10 +6,10 @@ registry: library
 
 app:
   image:
-    repository: labapp-app
-    tag: v1
+    repository: cadull/ai-attach-lab-app
+    tag: latest
   apiBaseUrl: http://labapp-api
 api:
   image:
-    repository: labapp-api
-    tag: v1
+    repository: cadull/ai-attach-lab-api
+    tag: latest

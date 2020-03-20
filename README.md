@@ -24,7 +24,6 @@ https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough).
    GROUP=$NAME-rg
    LOCATION=westeurope
    CLUSTER_NAME=$NAME-cluster
-   ACR_NAME=${NAME}acr
    AI_NAME=$NAME-ai
    TARGET_NAMESPACE=default
    ```
@@ -57,6 +56,8 @@ https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough).
    helm upgrade local-forwarder ./helm-v0.8.4.tgz -f values.yaml --install --set namespaces={} --set namespaces[0].target=$TARGET_NAMESPACE --set namespaces[0].iKey=$AI_KEY 
    ```
    
+   The local forwarder acts as a proxy, to which the instrumented containers in your namespace will send their telemetry data, upon which the local forwarder will forward it to your Application Insights instance in the cloud.
+
    Now your cluster is connected to Application Insights. All eligible workloads (.NET Core, Java, Node) that will be deployed into our target namespace, will automatically be instrumented by a mutating webhook that will change each deployment into the target namespace mainly in three ways: 
    * Mount a volume into the pods containing the Application Insights agents for .NET, Java and Node JS. 
    * Set some environment variables that make the runtime load the Application Insights agents as additional dependencies. 
@@ -75,7 +76,7 @@ Let’s see it in action.
 1. Deploy the app: 
 
    ```sh
-   helm upgrade labapp ./helm/labapp --install --set registry=${ACR_NAME}.azurecr.io 
+   helm upgrade labapp ./helm/labapp --install 
    ```
 
 1. Wait until we have an external IP to navigate to:
