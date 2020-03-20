@@ -1,0 +1,15 @@
+# Default values for labapp.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+registry: library
+
+app:
+  image:
+    repository: labapp-app
+    tag: v1
+  apiBaseUrl: http://labapp-api
+api:
+  image:
+    repository: labapp-api
+    tag: v1
