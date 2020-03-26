@@ -27,7 +27,7 @@ namespace app.Controllers
             var client = new HttpClient();
             var result = await client.GetAsync(valuesUrl);
             dynamic values = JsonConvert.DeserializeObject(await result.Content.ReadAsStringAsync());
-            ViewData["Message"] = $"DB Version: {values[0]}, Object Count: {values[1]}";
+            ViewData["DBVersion"] = values[0];
             return View();
         }
 
