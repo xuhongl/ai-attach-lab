@@ -1,0 +1,142 @@
+# Source: labapp/templates/api.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: labapp-api
+  name: labapp-api
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    run: labapp-api
+  type: ClusterIP
+---
+# Source: labapp/templates/app.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: labapp-app
+  name: labapp-app
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    run: labapp-app
+  type: LoadBalancer
+---
+# Source: labapp/templates/db.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: db
+spec:
+  type: ClusterIP
+  selector:
+    app: db
+  ports:
+  - protocol: TCP
+    port: 1433
+    targetPort: 1433
+---
+# Source: labapp/templates/api.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: labapp-api
+  name: labapp-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: labapp-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: labapp-api
+    spec:
+      containers:
+      - image: docker.io/cadull/ai-attach-lab-api:latest
+
+        env:
+        - name: DB_CONNECTION_STRING
+          value: "Data Source=db;Initial Catalog=master;User Id=sa;Password=P2ssw0rd"
+
+        imagePullPolicy: Always
+        name: labapp-api
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: "0.4"
+---
+# Source: labapp/templates/app.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: labapp-app
+  name: labapp-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: labapp-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: labapp-app
+    spec:
+      containers:
+      - image: docker.io/cadull/ai-attach-lab-app:latest
+        imagePullPolicy: Always
+        name: labapp-app
+        resources:
+          limits:
+            memory: 200Mi
+            cpu: "0.4" 
+        env:
+          - name: API_BASE_URL
+            value: http://labapp-api
+---
+# Source: labapp/templates/db.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: microsoft/mssql-server-linux:2017-CU12
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: "P2ssw0rd"
+
