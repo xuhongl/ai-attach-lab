@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: db
-        image: microsoft/mssql-server-linux:2017-CU12
+        image: microsoft/mssql-server-linux:2017-latest
         ports:
         - containerPort: 1433
         env:
