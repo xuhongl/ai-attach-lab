@@ -34,7 +34,7 @@ spec:
         run: labapp-api
     spec:
       containers:
-      - image: {{.Values.registry}}/{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}
+      - image: xxxuhong.azurecr.io/cluster1/api:v2
 {{ if .Values.api.connectionString }}
         env:
         - name: DB_CONNECTION_STRING

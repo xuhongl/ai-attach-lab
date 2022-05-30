@@ -34,7 +34,7 @@ spec:
         run: labapp-app
     spec:
       containers:
-      - image: {{ .Values.registry }}/{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+      - image: xxxuhong.azurecr.io/cluster1/app:latest
         imagePullPolicy: Always
         name: labapp-app
         resources:
